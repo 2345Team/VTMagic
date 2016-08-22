@@ -100,6 +100,23 @@ NS_ASSUME_NONNULL_BEGIN
  *  @return slider的宽度
  */
 - (CGFloat)magicView:(VTMagicView *)magicView sliderWidthAtIndex:(NSUInteger)itemIndex;
+/**
+ * @method 滑动左边界时传递手势
+ *
+ *
+ * @param   手势
+ * @result
+ */
+- (void)magicView:(VTMagicView *)view panLeftEdge:(UIPanGestureRecognizer*) panParam;
+
+/**
+ * @method 滑动到当前页面停止时触发
+ *
+ *
+ * @param   手势
+ * @result
+ */
+- (void)magicView:(VTMagicView *)view didCurrentAtIndex:(NSUInteger)itemIndex;
 
 @end
 
@@ -234,6 +251,12 @@ NS_ASSUME_NONNULL_BEGIN
  *  是否隐藏头部组件，默认YES
  */
 @property (nonatomic, assign, getter=isHeaderHidden) BOOL headerHidden;
+
+/**
+ *  头部item是否需要滑动，默认YES
+ */
+@property (nonatomic, assign) BOOL needScroll;
+
 /**
  *  显示或隐藏头部组件
  *

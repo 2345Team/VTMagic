@@ -99,6 +99,8 @@ static const void *kVTMagicView = &kVTMagicView;
     _needPreloading = YES;
     _switchAnimated = YES;
     _menuScrollEnabled = YES;
+    [_contentView.panGestureRecognizer addTarget:self action:@selector(scrollHandlePan:)];
+    
 }
 
 - (void)dealloc {
@@ -151,6 +153,7 @@ static const void *kVTMagicView = &kVTMagicView;
         [_contentView resetPageFrames];
     }
     self.needSkipUpdate = NO;
+    
     
     [self updateFrameForLeftNavigationItem];
     [self updateFrameForRightNavigationItem];
@@ -613,6 +616,18 @@ static VTPanRecognizerDirection direction = VTPanRecognizerDirectionUndefined;
     [nextItem setTitleColor:_normalColor forState:UIControlStateNormal];
 }
 
+//传递滑动事件给下一层
+- (void)scrollHandlePan:(UIPanGestureRecognizer*)panGesture
+{
+    //当滑道左边界时，传递滑动事件给代理
+    if(_contentView.contentOffset.x <= -10) {
+        if (self.delegate
+            && [self.delegate respondsToSelector:@selector(magicView:panLeftEdge:)]) {
+            [self.delegate magicView:self panLeftEdge:panGesture];
+        }
+    }
+}
+
 #pragma mark - VTMenuBarDatasource & VTMenuBarDelegate
 - (UIButton *)menuBar:(VTMenuBar *)menuBar menuItemAtIndex:(NSUInteger)itemIndex {
     if (!_magicFlags.dataSourceMenuItem) {
@@ -774,6 +789,8 @@ static VTPanRecognizerDirection direction = VTPanRecognizerDirectionUndefined;
     if (!decelerate) {
 //        VTLog(@"scrollViewDidEndDragging");
     }
+    
+    
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
@@ -788,6 +805,10 @@ static VTPanRecognizerDirection direction = VTPanRecognizerDirectionUndefined;
     }
     if (VTSwitchStyleDefault == _switchStyle && !_isPanValid) {
         [self updateMenuBarWhenSwitchEnd];
+    }
+    
+    if (_delegate != nil && [_delegate respondsToSelector:@selector(magicView:didCurrentAtIndex:)]) {
+        [_delegate magicView:self didCurrentAtIndex:_currentPage];
     }
 }
 
